@@ -1,0 +1,77 @@
+html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>AutoNom: Collector Pro</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; background: #2c3e50; color: white; text-align: center; padding: 20px; }
+        .game-container { background: #34495e; padding: 30px; border-radius: 15px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .plate { background: white; color: black; padding: 20px 40px; font-size: 40px; font-weight: bold; border: 5px solid #000; border-radius: 10px; margin: 20px auto; width: fit-content; letter-spacing: 5px; }
+        .stats { font-size: 24px; margin-bottom: 20px; color: #f1c40f; }
+        button { padding: 15px 40px; font-size: 20px; cursor: pointer; background: #e74c3c; color: white; border: none; border-radius: 5px; transition: 0.2s; }
+        button:hover { background: #c0392b; transform: scale(1.05); }
+        button:disabled { background: #7f8c8d; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>AutoNom: Collector</h1>
+        <div class="stats">Баланс: <span id="money">1000</span> ₽</div>
+        <div class="plate" id="plate">А 000 АА 777</div>
+        <button id="spinBtn" onclick="startSpin()">Крутить (100 ₽)</button>
+    </div>
+
+    <script>
+        let money = 1000;
+        const letters = "АВЕКМНОРСТУХ";
+        const btn = document.getElementById('spinBtn');
+
+        function getRandomChar() { return letters[Math.floor(Math.random() * letters.length)]; }
+        function getRandomInt() { return Math.floor(Math.random() * 900 + 100); }
+
+        function startSpin() {
+            if (money < 100) { alert("Недостаточно денег!"); return; }
+            money -= 100;
+            updateUI();
+            btn.disabled = true;
+
+            let count = 0;
+            const interval = setInterval(() => {
+                // Анимация текста
+                const l1 = getRandomChar();
+                const l2 = getRandomChar();
+                const l3 = getRandomChar();
+                const num = getRandomInt();
+                document.getElementById('plate').innerText = `${l1} ${num} ${l2}${l3} 777`;
+                
+                count++;
+                if (count > 15) { // Останавливаемся через 15 кадров
+                    clearInterval(interval);
+                    finalizeResult();
+                }
+            }, 70);
+        }
+
+        function finalizeResult() {
+            const l1 = getRandomChar(); const l2 = getRandomChar(); const l3 = getRandomChar();
+            const num = getRandomInt();
+            document.getElementById('plate').innerText = `${l1} ${num} ${l2}${l3} 777`;
+            
+            // Расчет выигрыша
+            let win = 0;
+            if (num % 111 === 0 && l1 === l2 && l2 === l3) win = 50000;
+            else if (num % 111 === 0) win = 10000;
+            else if (l1 === l2 && l2 === l3) win = 5000;
+            
+            if (win > 0) alert("Поздравляю! Выигрыш: " + win + " ₽");
+            money += win;
+            updateUI();
+            btn.disabled = false;
+        }
+
+        function updateUI() { document.getElementById('money').innerText = money; }
+    </script>
+</body>
+</html>
